@@ -1,15 +1,16 @@
-[sig_t,fs] = audioread('file_example_WAV_1MG Trim.wav');
+[sig_t,fs] = audioread('dove.mp3');
 L = length(sig_t);
 sound(sig_t,fs);
 
 %plot in time domain 
 tvec = linspace(0,length(sig_t)/fs,length(sig_t));
-figure; plot(tvec,sig_t); title('Original Signal in Time');
+figure; subplot(2,1,1);
+plot(tvec,sig_t); title('Original Signal in Time');
 
 %plot in frequency domain
 sig_f = abs(fftshift(fft(sig_t)));
 fvec = linspace(-fs/2,fs/2,length(sig_f));
-figure; plot(fvec,sig_f); title('Original Signal in Frequency');
+subplot(2,1,2); plot(fvec,sig_f); title('Original Signal in Frequency');
 
 %channel
 
@@ -33,10 +34,11 @@ s2 = conv(s2,h);
 sig_t = [s1;s2].'
 
 tvec = linspace(0,length(sig_t)/fs,length(sig_t));
-figure; plot(tvec,sig_t); title('Convoluted Signal in Time');
+figure; subplot(2,1,1);
+plot(tvec,sig_t); title('Convoluted Signal in Time');
 sig_f = abs(fftshift(fft(sig_t)));
 fvec = linspace(-fs/2,fs/2,length(sig_f));
-figure; plot(fvec,sig_f); title('Convoluted Signal in Frequency');
+subplot(2,1,2); plot(fvec,sig_f); title('Convoluted Signal in Frequency');
 
 sound(sig_t,fs);
 
@@ -51,12 +53,27 @@ sig_noise = sig_t + noise;
 
 %Signal representation
 tvec = linspace(0,length(sig_noise)/fs,length(sig_noise));
-figure; plot(tvec,sig_noise); title('Signal with Noise in Time');
+figure; subplot(2,1,1);
+plot(tvec,sig_noise); title('Signal with Noise in Time');
 sig_f = abs(fftshift(fft(sig_noise)));
 fvec = linspace(-fs/2,fs/2,length(sig_f));
-figure; plot(fvec,sig_f); title('Signal with Noise in Frequency');
+subplot(2,1,2); plot(fvec,sig_f); title('Signal with Noise in Frequency');
 
 sound(sig_noise,fs);
 
+% construction LPF and blocking the noise
+n = length(sig_f);
+sampPerFreq = idivide(int64(n),int64(fs));
+limit = sampPerFreq * (fs/2 - 3400);
+sig_f([1:limit n-limit+1:end]) = 0;
+figure;
+subplot(2,1,2);
+plot(fvec, sig_f);
+title('Filtered signal in f-domain');
+sig_t = real(ifft(ifftshift(sig_f)));
+subplot(2,1,1);
+plot(tvec, sig_t);
+title('Filtered signal in t-domain');
 
+sound(sig_t,fs);
 

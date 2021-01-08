@@ -31,7 +31,14 @@ s1 = conv(s1,h);
 s2 = sig_t(:,2).';
 s2 = conv(s2,h);
 
-sig_t = [s1;s2].'
+s1 = nonzeros(s1);
+s2 = nonzeros(s2);
+if length(s2) > length(s1)
+    s1 = [s1; zeros(length(s2) - length(s1),1)];
+elseif length(s2) < length(s1)
+    s2 = [s2; zeros(length(s1) - length(s2),1)];
+end
+sig_t = [s1 s2]
 
 tvec = linspace(0,length(sig_t)/fs,length(sig_t));
 figure; subplot(2,1,1);

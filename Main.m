@@ -34,5 +34,23 @@ figure; plot(fvec,sig_f); title('Convoluted Signal in Frequency');
 
 sound(sig_t,fs);
 
+%Noise
+sigma = input('Please input the standard deviation of the noise:');
+
+%Generaing the noise
+noise = sigma*randn(size(sig_t));
+
+%Adding noise to the signal
+sig_noise = sig_t + noise;
+
+%Signal representation
+tvec = linspace(0,length(sig_noise)/fs,length(sig_noise));
+figure; plot(tvec,sig_noise); title('Signal with Noise in Time');
+sig_f = abs(fftshift(fft(sig_noise)));
+fvec = linspace(-fs/2,fs/2,length(sig_f));
+figure; plot(fvec,sig_f); title('Signal with Noise in Frequency');
+
+sound(sig_noise,fs);
+
 
 
